@@ -1,23 +1,78 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-  <div class="container mx-auto px-4 py-16">
-    <div class="text-center">
-      <h1 class="text-5xl font-bold text-gray-900 mb-4">Welcome to Your SaaS App</h1>
-      <p class="text-xl text-gray-600 mb-8">Tailwind CSS is working perfectly!</p>
-      
-      <div class="grid md:grid-cols-3 gap-6 mt-12">
-        <div class="bg-white rounded-lg shadow-lg p-6">
-          <div class="text-blue-500 text-4xl mb-4">🚀</div>
-          <h3 class="text-xl font-semibold mb-2">Fast Development</h3>
-          <p class="text-gray-600">Build beautiful interfaces quickly with Tailwind CSS utility classes.</p>
+<% if @tenant %>
+  <!-- Tenant-specific page -->
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div class="container mx-auto px-4 py-16">
+      <div class="text-center">
+        <h1 class="text-5xl font-bold text-gray-900 mb-4">Welcome to <%= @tenant.name %></h1>
+        <p class="text-xl text-gray-600 mb-8">You're now accessing the <%= @tenant.subdomain %> workspace</p>
+        
+        <% if user_signed_in? %>
+          <div class="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
+            <h2 class="text-2xl font-semibold mb-4">Dashboard</h2>
+            <p class="text-gray-600 mb-4">Welcome back, <%= current_user.email %>!</p>
+            <p class="text-sm text-gray-500">Tenant: <%= @tenant.name %> (<%= @tenant.subdomain %>)</p>
+          </div>
+        <% else %>
+          <div class="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
+            <h2 class="text-2xl font-semibold mb-4">Sign in to <%= @tenant.name %></h2>
+            <p class="text-gray-600 mb-4">Please sign in to access your workspace.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <!-- Main landing page -->
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div class="container mx-auto px-4 py-16">
+      <div class="text-center">
+        <h1 class="text-5xl font-bold text-gray-900 mb-4">Welcome to Your Multi-Tenant SaaS App</h1>
+        <p class="text-xl text-gray-600 mb-8">Access your workspace by using your subdomain</p>
+        
+        <% if @tenants.any? %>
+          <div class="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Available Workspaces</h2>
+            <div class="space-y-2">
+              <% @tenants.each do |tenant| %>
+                <div class="flex justify-between items-center p-2 border rounded">
+                  <span><%= tenant.name %></span>
+                  <a href="http://<%= tenant.subdomain %>.<%= request.domain %>:<%= request.port %>" 
+                     class="text-blue-500 hover:text-blue-700 text-sm">
+                    Visit
+                  </a>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+        
+        <div class="mb-8">
+          <%= link_to "Admin Panel", admin_index_path, class: "bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" %>
         </div>
         
-        <div class="bg-white rounded-lg shadow-lg p-6">
-          <div class="text-green-500 text-4xl mb-4">⚡</div>
-          <h3 class="text-xl font-semibold mb-2">Optimized</h3>
-          <p class="text-gray-600">Production-ready with optimized CSS builds and minimal bundle size.</p>
+        <div class="grid md:grid-cols-3 gap-6 mt-12">
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="text-blue-500 text-4xl mb-4">🏢</div>
+            <h3 class="text-xl font-semibold mb-2">Multi-Tenant</h3>
+            <p class="text-gray-600">Separate workspaces for different organizations with subdomain routing.</p>
+          </div>
+          
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="text-green-500 text-4xl mb-4">👤</div>
+            <h3 class="text-xl font-semibold mb-2">User Management</h3>
+            <p class="text-gray-600">Secure authentication with Devise, scoped to tenants.</p>
+          </div>
+          
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="text-purple-500 text-4xl mb-4">⚡</div>
+            <h3 class="text-xl font-semibold mb-2">Rails + Tailwind</h3>
+            <p class="text-gray-600">Modern Rails application with beautiful Tailwind CSS styling.</p>
+          </div>
         </div>
-        
-        <div class="bg-white rounded-lg shadow-lg p-6">
+      </div>
+    </div>
+  </div>
+<% end %>
           <div class="text-purple-500 text-4xl mb-4">🎨</div>
           <h3 class="text-xl font-semibold mb-2">Customizable</h3>
           <p class="text-gray-600">Easily customize your design system with Tailwind's configuration.</p>

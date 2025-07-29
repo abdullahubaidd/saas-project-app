@@ -23,6 +23,35 @@
   </head>
 
   <body>
+    <% if notice %>
+      <p class="notice bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4"><%= notice %></p>
+    <% end %>
+    <% if alert %>
+      <p class="alert bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"><%= alert %></p>
+    <% end %>
+    
+    <nav class="bg-gray-800 text-white p-4">
+      <div class="container mx-auto flex justify-between items-center">
+        <% if ActsAsTenant.current_tenant %>
+          <h1 class="text-xl font-bold"><%= ActsAsTenant.current_tenant.name %></h1>
+        <% else %>
+          <h1 class="text-xl font-bold">SaaS App</h1>
+        <% end %>
+        
+        <div>
+          <% if user_signed_in? %>
+            <span class="mr-4">Welcome, <%= current_user.email %>!</span>
+            <%= link_to "Sign out", destroy_user_session_path, method: :delete, class: "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" %>
+          <% else %>
+            <%= link_to "Sign in", new_user_session_path, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" %>
+            <%= link_to "Sign up", new_user_registration_path, class: "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" %>
+          <% end %>
+        </div>
+      </div>
+    </nav>
+    
+    <main class="container mx-auto p-4">
       <%= yield %>
+    </main>
   </body>
 </html>
