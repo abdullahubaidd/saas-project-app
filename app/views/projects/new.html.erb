@@ -1,0 +1,102 @@
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="md:flex md:items-center md:justify-between mb-8">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        Create New Project
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        Add a new project to <%= current_organization.name %>
+      </p>
+    </div>
+    <div class="mt-4 flex md:mt-0 md:ml-4">
+      <%= link_to "Back to Projects", organization_projects_path(current_organization),
+          class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
+    </div>
+  </div>
+
+  <div class="bg-white shadow-sm rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <%= form_with model: [@organization, @project], local: true, class: "space-y-6" do |form| %>
+        <% if @project.errors.any? %>
+          <div class="rounded-md bg-red-50 p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">
+                  Please fix the following errors:
+                </h3>
+                <div class="mt-2 text-sm text-red-700">
+                  <ul class="list-disc pl-5 space-y-1">
+                    <% @project.errors.full_messages.each do |message| %>
+                      <li><%= message %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <div>
+          <%= form.label :name, class: "block text-sm font-medium text-gray-700" %>
+          <div class="mt-1">
+            <%= form.text_field :name, 
+                placeholder: "My Awesome Project",
+                class: "shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+          </div>
+          <p class="mt-2 text-sm text-gray-500">
+            Choose a descriptive name for your project.
+          </p>
+        </div>
+
+        <div>
+          <%= form.label :description, class: "block text-sm font-medium text-gray-700" %>
+          <div class="mt-1">
+            <%= form.text_area :description, 
+                rows: 4,
+                placeholder: "Describe what this project is about...",
+                class: "shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+          </div>
+          <p class="mt-2 text-sm text-gray-500">
+            Provide a brief description to help team members understand the project's purpose.
+          </p>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <%= link_to "Cancel", organization_projects_path(current_organization),
+              class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+          <%= form.submit "Create Project",
+              class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Information section -->
+  <div class="mt-8 bg-green-50 rounded-lg p-6">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-green-800">
+          What happens next?
+        </h3>
+        <div class="mt-2 text-sm text-green-700">
+          <ul class="list-disc pl-5 space-y-1">
+            <li>You'll be automatically assigned as the project admin</li>
+            <li>You can invite team members to collaborate on this project</li>
+            <li>Set up project tasks, milestones, and track progress</li>
+            <li>Control who has access to view or edit project content</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,101 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="md:flex md:items-center md:justify-between mb-8">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        Team Members
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        Manage members of <%= current_organization.name %>
+      </p>
+    </div>
+    <div class="mt-4 flex md:mt-0 md:ml-4">
+      <%= link_to "Invite Member", new_organization_invitation_path(current_organization),
+          class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+    </div>
+  </div>
+
+  <div class="bg-white shadow overflow-hidden sm:rounded-md">
+    <ul role="list" class="divide-y divide-gray-200">
+      <% current_organization.organization_memberships.includes(:user).each do |membership| %>
+        <li class="px-4 py-4 sm:px-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
+                  <span class="text-sm font-medium text-white">
+                    <%= membership.user.first_name.first.upcase %><%= membership.user.last_name.first.upcase %>
+                  </span>
+                </div>
+              </div>
+              <div class="ml-4">
+                <div class="flex items-center">
+                  <p class="text-sm font-medium text-gray-900">
+                    <%= membership.user.full_name %>
+                  </p>
+                  <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= membership.admin? ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800' %>">
+                    <%= membership.role.capitalize %>
+                  </span>
+                  <% if membership.user == current_organization.owner %>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      Owner
+                    </span>
+                  <% end %>
+                </div>
+                <p class="text-sm text-gray-500">
+                  <%= membership.user.email %>
+                </p>
+                <p class="text-xs text-gray-400">
+                  Joined on <%= membership.created_at.strftime("%B %d, %Y") %>
+                </p>
+              </div>
+            </div>
+            
+            <% if current_user.admin_of?(current_organization) && membership.user != current_organization.owner %>
+              <div class="flex items-center space-x-2">
+                <% if membership.user != current_user %>
+                  <%= form_with model: [current_organization, membership], url: organization_organization_member_path(current_organization, membership.user), method: :patch, local: true, class: "inline" do |form| %>
+                    <%= form.select :role, 
+                        options_for_select([['Member', 'member'], ['Admin', 'admin']], membership.role),
+                        {},
+                        { class: "text-xs border-gray-300 rounded-md", onchange: "this.form.submit();" } %>
+                  <% end %>
+                  
+                  <%= button_to "Remove", organization_organization_member_path(current_organization, membership.user),
+                      method: :delete,
+                      confirm: "Are you sure you want to remove #{membership.user.full_name} from the organization?",
+                      class: "inline-flex items-center px-3 py-1 border border-red-300 rounded-md text-xs font-medium text-red-700 bg-white hover:bg-red-50" %>
+                <% else %>
+                  <span class="text-xs text-gray-500">You</span>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <% if current_organization.organization_memberships.count == 1 %>
+    <div class="mt-8 bg-blue-50 rounded-lg p-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-blue-800">
+            Invite your team
+          </h3>
+          <div class="mt-2 text-sm text-blue-700">
+            <p>You're the only member of this organization. Invite your colleagues to start collaborating!</p>
+            <div class="mt-4">
+              <%= link_to "Send your first invitation", new_organization_invitation_path(current_organization),
+                  class: "inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

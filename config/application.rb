@@ -23,5 +23,8 @@ module SaasProjectAppSql
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    
+    # Default host for URL generation (used in invitations)
+    config.default_host = 'localhost:3000'
   end
 end

@@ -3,9 +3,36 @@ Rails.application.routes.draw do
     registrations: 'users/registrations'
   }
   
-  # Admin routes
-  get '/admin', to: 'admin#index', as: :admin_index
-  post '/admin/create_tenant', to: 'admin#create_tenant', as: :admin_create_tenant
+  # Organization routes
+  resources :organizations do
+    member do
+      patch :switch  # For switching between organizations
+    end
+    
+    resources :projects do
+      member do
+        patch :archive
+        patch :unarchive
+      end
+      
+      resources :project_assignments, path: 'members', only: [:new, :create, :destroy]
+      resources :project_files, path: 'files', only: [:index, :new, :create, :show, :destroy]
+    end
+    
+    resources :invitations, except: [:edit, :update] do
+      member do
+        patch :resend
+      end
+    end
+    
+    resources :organization_members, path: 'members', only: [:index, :show, :update, :destroy]
+  end
+  
+  # Public invitation acceptance (no authentication required)
+  get '/invitations/:token/accept', to: 'invitations#accept', as: :accept_invitation
+  
+  # Dashboard/Home
+  get '/dashboard', to: 'dashboard#index', as: :dashboard
   
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

@@ -1,0 +1,122 @@
+<% content_for :title, "Dashboard" %>
+
+<div class="min-h-screen bg-gray-50">
+  <div class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="py-6">
+        <div class="md:flex md:items-center md:justify-between">
+          <div class="flex-1 min-w-0">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+              Welcome back, <%= current_user.full_name %>
+            </h2>
+          </div>
+          <div class="mt-4 flex md:mt-0 md:ml-4">
+            <%= link_to "New Organization", new_organization_path, 
+                class: "ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Organizations Section -->
+    <div class="px-4 py-6 sm:px-0">
+      <div class="mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Your Organizations</h3>
+        </div>
+        
+        <% if @organizations.any? %>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <% @organizations.each do |organization| %>
+              <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-200">
+                <%= link_to organization, class: "block p-6" do %>
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                      <div class="h-8 w-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-semibold text-sm"><%= organization.name.first.upcase %></span>
+                      </div>
+                    </div>
+                    <div class="ml-4">
+                      <h4 class="text-lg font-medium text-gray-900"><%= organization.name %></h4>
+                      <p class="text-sm text-gray-500">
+                        <%= pluralize(organization.projects.count, 'project') %> •
+                        <%= pluralize(organization.members.count, 'member') %>
+                      </p>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-12">
+            <div class="mx-auto h-12 w-12 text-gray-400">
+              <svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No organizations</h3>
+            <p class="mt-1 text-sm text-gray-500">Get started by creating your first organization.</p>
+            <div class="mt-6">
+              <%= link_to new_organization_path, 
+                  class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+                <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                New Organization
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Recent Projects Section -->
+      <% if @recent_projects.any? %>
+        <div class="mb-8">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Projects</h3>
+          <div class="bg-white shadow overflow-hidden sm:rounded-md">
+            <ul class="divide-y divide-gray-200">
+              <% @recent_projects.each do |project| %>
+                <li>
+                  <%= link_to [project.organization, project], class: "block hover:bg-gray-50" do %>
+                    <div class="px-4 py-4 sm:px-6">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                          <p class="text-sm font-medium text-blue-600 truncate">
+                            <%= project.name %>
+                          </p>
+                          <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            <%= project.organization.name %>
+                          </span>
+                        </div>
+                        <div class="ml-2 flex-shrink-0 flex">
+                          <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            <%= pluralize(project.users.count, 'member') %>
+                          </p>
+                        </div>
+                      </div>
+                      <div class="mt-2 sm:flex sm:justify-between">
+                        <div class="sm:flex">
+                          <p class="flex items-center text-sm text-gray-500">
+                            <%= project.description.present? ? truncate(project.description, length: 100) : "No description" %>
+                          </p>
+                        </div>
+                        <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                          <p>
+                            Updated <%= time_ago_in_words(project.updated_at) %> ago
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

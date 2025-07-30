@@ -1,0 +1,149 @@
+<% content_for :title, @organization.name %>
+
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <div class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="py-6">
+        <div class="md:flex md:items-center md:justify-between">
+          <div class="flex-1 min-w-0">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+              <%= @organization.name %>
+            </h2>
+            <% if @organization.description.present? %>
+              <p class="mt-1 text-sm text-gray-500"><%= @organization.description %></p>
+            <% end %>
+          </div>
+          <div class="mt-4 flex md:mt-0 md:ml-4">
+            <% if current_user.admin_of?(@organization) %>
+              <%= link_to "Invite Member", new_organization_invitation_path(@organization), 
+                  class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+              <%= link_to "New Project", new_organization_project_path(@organization), 
+                  class: "ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Navigation -->
+    <div class="px-4 sm:px-0">
+      <nav class="flex space-x-8 mb-8">
+        <a href="#projects" class="border-blue-500 text-blue-600 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">
+          Projects
+        </a>
+        <%= link_to "Members", organization_organization_members_path(@organization), 
+            class: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" %>
+        <% if current_user.admin_of?(@organization) %>
+          <%= link_to "Invitations", organization_invitations_path(@organization), 
+              class: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" %>
+        <% end %>
+      </nav>
+    </div>
+
+    <!-- Projects Section -->
+    <div id="projects" class="px-4 sm:px-0">
+      <% if @projects.any? %>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <% @projects.each do |project| %>
+            <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-200">
+              <%= link_to [@organization, project], class: "block p-6" do %>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center min-w-0 flex-1">
+                    <div class="flex-shrink-0">
+                      <div class="h-8 w-8 bg-green-500 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-semibold text-sm"><%= project.name.first.upcase %></span>
+                      </div>
+                    </div>
+                    <div class="ml-4 min-w-0 flex-1">
+                      <h4 class="text-lg font-medium text-gray-900 truncate"><%= project.name %></h4>
+                      <p class="text-sm text-gray-500">
+                        <%= pluralize(project.users.count, 'member') %>
+                      </p>
+                    </div>
+                  </div>
+                  <% if project.archived? %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      Archived
+                    </span>
+                  <% end %>
+                </div>
+                <% if project.description.present? %>
+                  <div class="mt-4">
+                    <p class="text-sm text-gray-600"><%= truncate(project.description, length: 100) %></p>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <div class="mx-auto h-12 w-12 text-gray-400">
+            <svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No projects</h3>
+          <p class="mt-1 text-sm text-gray-500">Get started by creating your first project.</p>
+          <% if current_user.admin_of?(@organization) %>
+            <div class="mt-6">
+              <%= link_to new_organization_project_path(@organization), 
+                  class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+                <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                New Project
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Members Preview -->
+    <div class="px-4 sm:px-0 mt-8">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Team Members</h3>
+        <%= link_to "View All", organization_organization_members_path(@organization), 
+            class: "text-sm text-blue-600 hover:text-blue-500" %>
+      </div>
+      
+      <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <ul class="divide-y divide-gray-200">
+          <% @members.limit(5).each do |member| %>
+            <li class="px-6 py-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10">
+                    <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                      <span class="text-sm font-medium text-gray-700"><%= member.full_name.split.map(&:first).join %></span>
+                    </div>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900"><%= member.full_name %></div>
+                    <div class="text-sm text-gray-500"><%= member.email %></div>
+                  </div>
+                </div>
+                <div class="flex items-center">
+                  <% membership = member.organization_memberships.find_by(organization: @organization) %>
+                  <% if membership %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= membership.admin? ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' %>">
+                      <%= membership.role.titleize %>
+                    </span>
+                  <% else %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                      No Access
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
